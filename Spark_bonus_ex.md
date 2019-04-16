@@ -48,7 +48,7 @@ rdd3.map(lambda v: ','.join(v)).saveAsTextFile("/loudacre/devicestatus_etl")
 
 G. Confirm that the data in the file(s) was saved correctly.
 ```
-#파일 
+#파일확인
 hdfs dfs -tail /loudacre/devicestatus_etl/part-00000
 
 2014-03-15:10:49:30,Sorrento,86d93f67-0287-4e85-8472-076aa8b9fa42,37.4969347594,-122.174978527
