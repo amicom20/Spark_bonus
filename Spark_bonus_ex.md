@@ -20,6 +20,7 @@ enabled,
 
 A. Upload the devicestatus.txt file to HDFS.
 ```
+#파일 put
 hdfs dfs -put $DEVDATA/devicestatus.txt /loudacre/
 ```
 
@@ -27,22 +28,27 @@ B. Determine which delimiter to use (hint: the character at position 19 is the f
 C. Filter out any records which do not parse correctly (hint: eachrecord should have exactly 14 values).
 ```
 rdd1 = sc.textFile("/loudacre/devicestatus.txt")
+#19번자리 값을 기준으로 split 수행 및 value가 14개인 것만 filter
 rdd2 = rdd1.map(lambda line: line.split(line[19:20])).filter(lambda values: len(values) == 14)
 ```
 
 D. Extract the date (first field), model (second field), device ID (thirdfield), and latitude and longitude (13th and 14th fieldsrespectively).
 E. The second field contains the device manufacturer and model name (such as Ronin S2). Split this field by spaces to separate the manufacturer from the model (for example, manufacturerRonin, model S2). Keep just the manufacturer name.
 ```
+#각 위치별 값 extract 및 공백으로 분리되어있는 제조자, 모델명 split 및 제조사(0번)값 extract
 rdd3 = rdd2.map(lambda v: (v[0],v[1].split(' ')[0],v[2],v[12],v[13]))
 ```
 
 F. Save the extracted data to comma-delimited text files in the /loudacre/devicestatus_etl directory on HDFS.
 ```
+#rdd3 값에 ',' delimiter 변환 및 /loudacre/devicestatus_etl에 파일저장
+#(참고 https://stackoverflow.com/questions/44356885/change-the-delimiter-in-saveastextfile-option-in-pyspark-rdd)
 rdd3.map(lambda v: ','.join(v)).saveAsTextFile("/loudacre/devicestatus_etl")
 ```
 
 G. Confirm that the data in the file(s) was saved correctly.
 ```
+#파일 
 hdfs dfs -tail /loudacre/devicestatus_etl/part-00000
 
 2014-03-15:10:49:30,Sorrento,86d93f67-0287-4e85-8472-076aa8b9fa42,37.4969347594,-122.174978527
